@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="southwest.monsoon.module.dictionary.mapper.MonDictionaryMapper">
+    <resultMap id="DictDto" type="southwest.monsoon.module.dictionary.dto.DictDto">
+        <id property="code" column="parent_code"/>
+        <collection property="items" javaType="ArrayList"
+                    ofType="southwest.monsoon.module.dictionary.dto.DictItemDto">
+            <result property="code" column="code"/>
+            <result property="name" column="name"/>
+            <result property="seq" column="seq"/>
+        </collection>
+    </resultMap>
+
+    <select id="getDictByCode" resultMap="DictDto">
+        SELECT par.code AS parent_code, sub.code, sub.name, sub.seq FROM mon_dictionary sub INNER JOIN mon_dictionary par
+        ON sub.parent_id = par.id AND par.dir = 1 AND sub.dir = 0 AND sub.deleted = 0 AND par.deleted = 0
+        AND par.code IN
+        <foreach collection="collection" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY parent_code,seq ASC
+    </select>
+
+    <select id="getDictIds" resultType="java.lang.String">
+        SELECT id FROM mon_dictionary WHERE id IN
+        <foreach collection="collection" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

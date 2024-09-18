@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="logs"/>
+    <springProperty scope="context" name="FILE_APPENDER" source="logging.file.appender" defaultValue="FILE"/>
+
+    <!-- Console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{50}:%L) - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>=
+    </appender>
+
+    <!-- Does not output to file -->
+    <appender name="NOP" class="ch.qos.logback.core.helpers.NOPAppender"/>
+    <!-- Output to file and split by size and time -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Output Destination -->
+            <FileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}-${APP_NAME}-log-%i.log</FileNamePattern>
+            <!-- Maximum number of days of retention -->
+            <MaxHistory>15</MaxHistory>
+            <maxFileSize>30MB</maxFileSize>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:%L - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="${FILE_APPENDER}"/>
+    </root>
+</included>
