@@ -50,8 +50,12 @@ public class WebException extends RuntimeException {
         return new WebException(status, reMsg, data);
     }
 
-    public static WebException cause(Throwable cause) {
-        return new WebException(HttpStatus.INTERNAL_SERVER_ERROR, SimpleMsg.text(cause.getMessage()), null, cause);
+    public static RuntimeException cause(Throwable cause) {
+        if (cause instanceof RuntimeException) {
+            return (RuntimeException) cause;
+        } else {
+            return new WebException(HttpStatus.INTERNAL_SERVER_ERROR, SimpleMsg.text(cause.getMessage()), null, cause);
+        }
     }
 
     public static WebException cause(ReMsg reMsg, Throwable cause) {

@@ -17,6 +17,7 @@ import southwest.monsoon.module.common.web.result.msg.MultiLangMsg;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -46,6 +47,10 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Getter
     private boolean includeTakeTime = false;
 
+    @Setter
+    @Getter
+    private Function<HttpServletRequest, Boolean> skippingJudgment = request -> false;
+
     /**
      * Start time field identification
      */
@@ -55,7 +60,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return isStaticResource(request);
+        return isStaticResource(request) || skippingJudgment.apply(request);
     }
 
     private boolean isStaticResource(HttpServletRequest request) {
@@ -136,18 +141,30 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         if (isIncludeRequestPayload()) {
             String payload = getTextContent(request.getContentType(), request::getContentAsByteArray, request.getCharacterEncoding());
-            msg.append(";requestBody=").append(payload);
+            if (payload != null) {
+                msg.append(";requestBody=");
+                appendAndTrim(msg,payload);
+            }
         }
 
         if (isIncludeResponsePayload()) {
             String payload = getTextContent(response.getContentType(), response::getContentAsByteArray, response.getCharacterEncoding());
             if (payload != null) {
-                msg.append(";responseBody=").append(payload);
+                msg.append(";responseBody=");
+                appendAndTrim(msg,payload);
             }
         }
 
         msg.append(']');
-        logger.info(msg);
+        logger.info(msg.toString());
+    }
+
+    private void appendAndTrim(StringBuilder msg, String payload){
+        for (char c : payload.toCharArray()) {
+            if (c != '\n' && c != '\r') {
+                msg.append(c);
+            }
+        }
     }
 
     /**

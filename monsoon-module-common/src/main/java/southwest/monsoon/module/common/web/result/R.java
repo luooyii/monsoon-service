@@ -18,7 +18,7 @@ public class R<T> implements Serializable {
     @Schema(description = "Response code", requiredMode = Schema.RequiredMode.REQUIRED)
     private int code;
     @Schema(description = "Response message", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String msg;
+    private String message;
     @JsonIgnore
     private ReMsg reMsg;
     @Schema(description = "Response data")
@@ -63,7 +63,7 @@ public class R<T> implements Serializable {
         }
         this.code = status.value();
         this.reMsg = reMsg;
-        this.msg = reMsg.getMsg();
+        this.message = reMsg.getMsg();
         this.data = data;
     }
 
