@@ -1,7 +1,5 @@
 package southwest.monsoon.module.common.mybatis.service;
 
-import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +7,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
-import southwest.monsoon.module.common.mybatis.entity.LongIdWithVersionControl;
-import southwest.monsoon.module.common.mybatis.mapper.VersionControlMapper;
+import southwest.monsoon.module.common.mybatis.entity.IdWithVersionControl;
+import southwest.monsoon.module.common.mybatis.mapper.IdWithVersionControlMapper;
 import southwest.monsoon.module.common.web.result.exception.WebException;
 import southwest.monsoon.module.common.web.result.msg.SimpleMsg;
 
@@ -25,7 +23,7 @@ import static southwest.monsoon.module.common.mybatis.DbConst.MAX_TIME_TS;
 
 @Slf4j
 @Validated
-public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T extends LongIdWithVersionControl> extends ServiceImpl<M, T> {
+public class IdWithVersionControlService<M extends IdWithVersionControlMapper<T>, T extends IdWithVersionControl> extends ServiceImpl<M, T> {
     public void checkVersion(T entity) {
         if (entity.getId() == null || Objects.equals(0L, entity.getId())) {
             entity.setId(null);
@@ -66,7 +64,7 @@ public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T exte
     }
 
     public int eraseActivation(Timestamp time, String updateBy,
-                               @NotNull(message = "Id {jakarta.validation.constraints.NotNull.message}!") Long id) {
+                               @NotNull(message = "Id {jakarta.validation.constraints.NotNull.message}!") Object id) {
         return baseMapper.eraseActivationById(time, updateBy, id);
     }
 

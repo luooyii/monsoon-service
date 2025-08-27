@@ -1,7 +1,5 @@
 package southwest.monsoon.module.common.mybatis.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -13,10 +11,10 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class UuidWithVersionControl {
-    @TableId(type = IdType.ASSIGN_UUID)
-    @Schema(type = "string", example = "0198e59a896e7b6fbf415a68f842edeb")
-    protected String id;
+public abstract class IdWithVersionControl<T> {
+    public abstract T getId();
+
+    public abstract void setId(T id);
 
     protected Integer version;
 
@@ -65,7 +63,7 @@ public class UuidWithVersionControl {
     @Schema(description = "Record this version is erased by", example = "USERNAME")
     protected String eraseBy;
 
-    public void inherit(UuidWithVersionControl old) {
+    public void inherit(IdWithVersionControl old) {
         setVersion(old.getVersion() + 1);
         setEraseBy(null);
         setCreateBy(old.getCreateBy());
