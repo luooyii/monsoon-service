@@ -13,10 +13,10 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class IdWithVersionControl {
-    @TableId(type = IdType.ASSIGN_ID)
-    @Schema(type = "string", example = "1770435211688480775")
-    protected Long id;
+public class UuidWithVersionControl {
+    @TableId(type = IdType.ASSIGN_UUID)
+    @Schema(type = "string", example = "0198e59a896e7b6fbf415a68f842edeb")
+    protected String id;
 
     protected Integer version;
 
@@ -65,7 +65,7 @@ public class IdWithVersionControl {
     @Schema(description = "Record this version is erased by", example = "USERNAME")
     protected String eraseBy;
 
-    public void inherit(IdWithVersionControl old) {
+    public void inherit(UuidWithVersionControl old) {
         setVersion(old.getVersion() + 1);
         setEraseBy(null);
         setCreateBy(old.getCreateBy());

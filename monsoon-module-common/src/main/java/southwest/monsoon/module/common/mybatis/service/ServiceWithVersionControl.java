@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
-import southwest.monsoon.module.common.mybatis.entity.IdWithVersionControl;
+import southwest.monsoon.module.common.mybatis.entity.LongIdWithVersionControl;
 import southwest.monsoon.module.common.mybatis.mapper.VersionControlMapper;
 import southwest.monsoon.module.common.web.result.exception.WebException;
 import southwest.monsoon.module.common.web.result.msg.SimpleMsg;
@@ -25,7 +25,7 @@ import static southwest.monsoon.module.common.mybatis.DbConst.MAX_TIME_TS;
 
 @Slf4j
 @Validated
-public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T extends IdWithVersionControl> extends ServiceImpl<M, T> {
+public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T extends LongIdWithVersionControl> extends ServiceImpl<M, T> {
     public void checkVersion(T entity) {
         if (entity.getId() == null || Objects.equals(0L, entity.getId())) {
             entity.setId(null);
@@ -53,7 +53,7 @@ public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T exte
         if (entity.getId() != null) {
             T latest = getLatestById(entity);
             if (latest != null) {
-                eraseActivation(now, updateBy, latest.getId(), entity.getClass());
+                eraseActivation(now, updateBy, latest.getId());
                 entity.inherit(latest);
             }
         } else {
@@ -66,12 +66,12 @@ public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T exte
     }
 
     public int eraseActivation(Timestamp time, String updateBy,
-                               @NotNull(message = "Id {jakarta.validation.constraints.NotNull.message}!") Long id, Class clasz) {
-        return baseMapper.eraseActivationById(time, updateBy, id, getTableName(clasz));
+                               @NotNull(message = "Id {jakarta.validation.constraints.NotNull.message}!") Long id) {
+        return baseMapper.eraseActivationById(time, updateBy, id);
     }
 
     private T getLatestById(T entity) {
-        return baseMapper.getLatestById(entity.getId(), getTableName(entity.getClass()));
+        return baseMapper.getLatestById(entity.getId());
     }
 
     public void checkFieldDuplication(T entity, String propertyName, String columnName) throws InvocationTargetException, IllegalAccessException {
@@ -96,12 +96,7 @@ public class ServiceWithVersionControl<M extends VersionControlMapper<T>, T exte
     }
 
     public T getByPrimeKey(@NotNull(message = "Id {jakarta.validation.constraints.NotNull.message}!") Long id,
-                           @NotNull(message = "Version {jakarta.validation.constraints.NotNull.message}!") Integer version, Class clasz) {
-        return baseMapper.getByPrimeKey(id, version, getTableName(clasz));
-    }
-
-    private String getTableName(Class clasz) {
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(clasz);
-        return tableInfo.getTableName();
+                           @NotNull(message = "Version {jakarta.validation.constraints.NotNull.message}!") Integer version) {
+        return baseMapper.getByPrimeKey(id, version);
     }
 }
