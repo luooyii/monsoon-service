@@ -11,7 +11,7 @@
 
     <groupId>io.github.luooyii</groupId>
     <artifactId>monsoon-module-common</artifactId>
-    <version>3.5.7</version>
+    <version>3.5.5.1</version>
     <name>Monsoon Module - Common</name>
     <description>Common for Monsoon Services</description>
     <url>https://github.com/luooyii/monsoon-service</url>
